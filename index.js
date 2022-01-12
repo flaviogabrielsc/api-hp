@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require("express");
 const { send } = require("express/lib/response");
 const mongoose = require("mongoose");
@@ -5,9 +6,11 @@ const Character = require("./models/Character");
 
 const app = express();
 
+const port = 3000 || process.env.PORT;
+
 try {
   mongoose.connect(
-    "mongodb+srv://root:123@cluster0.cyrc0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+    process.env.DATABASE_URI,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -133,6 +136,6 @@ if(!character){
   res.send({ message: "Personagem apagado com sucesso!" });
 });
 
-app.listen(3000, () => {
-  console.log("Servidor rodando em http://localhost:3000");
+app.listen(port, () => {
+  console.log(`Servidor rodando em http://localhost:${port}`);
 });
