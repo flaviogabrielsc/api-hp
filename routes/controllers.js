@@ -1,5 +1,10 @@
-//GETALL - READ ALL
-app.get("/characters", async (req, res) => {
+const express = require("express");
+const router = express.Router();
+const mongoose = require('mongoose')
+const Character = require("../models/Character");
+
+
+router.get("/characters", async (req, res) => {
     const characters = await Character.find();
   
     if (characters.length === 0) {
@@ -12,7 +17,7 @@ app.get("/characters", async (req, res) => {
   });
   
   //getBYiD
-  app.get("/character/:id", async (req, res) => {
+  router.get("/character/:id", async (req, res) => {
     const { id } = req.params;
   
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -29,7 +34,7 @@ app.get("/characters", async (req, res) => {
     res.send(character);
   });
   //POST - CREATE
-  app.post("/character", async (req, res) => {
+  router.post("/character", async (req, res) => {
     const { name, species, house, actor } = req.body;
   
     if (!name || !species || !house || !actor) {
@@ -54,7 +59,7 @@ app.get("/characters", async (req, res) => {
   });
   
   //PUT - UPDATE
-  app.put("/character/:id", async (req, res) => {
+  router.put("/character/:id", async (req, res) => {
     const { id } = req.params;
   
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -92,7 +97,7 @@ app.get("/characters", async (req, res) => {
   });
   
   //DELETE - DELETE
-  app.delete("/character/:id", async (req, res) => {
+  router.delete("/character/:id", async (req, res) => {
     const { id } = req.params;
   
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -111,4 +116,4 @@ app.get("/characters", async (req, res) => {
     res.send({ message: "Personagem apagado com sucesso!" });
   });
   
-  module.exports = router ()
+  module.exports = router 

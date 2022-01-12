@@ -14,9 +14,8 @@ const database = () => {
       } catch (err) {
         console.log(`Erro ao conectar ao bando de dados ${err}`);
       }
-
+}
 module.exports = database()
 
 
 
-}
