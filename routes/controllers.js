@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const Character = require("../models/Character");
 
 
-router.get("/characters", async (req, res) => {
+router.get("/", async (req, res) => {
     const characters = await Character.find();
   
     if (characters.length === 0) {
@@ -34,7 +34,7 @@ router.get("/characters", async (req, res) => {
     res.send(character);
   });
   //POST - CREATE
-  router.post("/character", async (req, res) => {
+  router.post("/add-character", async (req, res) => {
     const { name, species, house, actor } = req.body;
   
     if (!name || !species || !house || !actor) {
@@ -74,7 +74,6 @@ router.get("/characters", async (req, res) => {
     }
   
     const { name, species, house, actor } = req.body; 
-  
   
     if (!name || !species || !house || !actor) {
       res
