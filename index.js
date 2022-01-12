@@ -1,7 +1,7 @@
-const express = require('express');
-const { send } = require('express/lib/response');
-const mongoose = require('mongoose');
-const Character = require('./models/Character')
+const express = require("express");
+const { send } = require("express/lib/response");
+const mongoose = require("mongoose");
+const Character = require("./models/Character");
 
 const app = express();
 
@@ -13,55 +13,53 @@ try {
       useUnifiedTopology: true,
     }
   );
-  console.log('Banco de dados conectado!')
+  console.log("Banco de dados conectado!");
 } catch (err) {
-  console.log(`Erro ao conectar ao bando de dados ${err}`)
+  console.log(`Erro ao conectar ao bando de dados ${err}`);
 }
-
-
 
 app.use(express.json());
 
 //GETALL - READ ALL
 app.get("/characters", async (req, res) => {
+  const characters = await Character.find();
 
-  const characters = await Character.find()
-
-  if(characters.length === 0 ){
-    return res.status(404).send({ message: 'Não existem personagens cadastrados!'})
+  if (characters.length === 0) {
+    return res
+      .status(404)
+      .send({ message: "Não existem personagens cadastrados!" });
   }
-
 
   res.send(characters.filter(Boolean));
 });
 
 //getBYiD
 app.get("/character/:id", async (req, res) => {
-    const {id} = req.params;
+  const { id } = req.params;
 
-    if(!mongoose.Types.ObjectId.isValid(id)){
-      res.status(400).send({ message: 'Id invalido'});
-      return; 
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res.status(400).send({ message: "Id invalido" });
+    return;
+  }
 
-    }
-    
-      
-      const character = await  Character.findById(id);
-      
-      if(!character){
-        return res.status(404).send({message: 'Personagem não encontrado!'})
-      }
-      
-      
-      res.send(character);
-    }
-  )
+  const character = await Character.findById(id);
+
+  if (!character) {
+    return res.status(404).send({ message: "Personagem não encontrado!" });
+  }
+
+  res.send(character);
+});
 //POST - CREATE
 app.post("/character", async (req, res) => {
-  const {name, species, house, actor} = req.body;
+  const { name, species, house, actor } = req.body;
 
-  if(!name || !species || !house || !actor){
-    res.status(400).send({ message: 'Você não enviou todos os dados necessários para o cadastro'})
+  if (!name || !species || !house || !actor) {
+    res
+      .status(400)
+      .send({
+        message: "Você não enviou todos os dados necessários para o cadastro",
+      });
     return;
   }
 
@@ -70,49 +68,67 @@ app.post("/character", async (req, res) => {
     species,
     house,
     actor,
-  })
+  });
 
-  await character.save()
+  await character.save();
 
   res.send({ message: "Personagem criado com sucesso!" });
 });
 
-
 //PUT - UPDATE
-app.put("/character/:id", (req, res) => {
-  const id = +req.params.id;
-  const character = characters.find((c) => c.id === id);
-  if (!character) {
-    res.status(404).send({ message: "Personagem não existe!" });
+app.put("/character/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res.status(400).send({ message: "Id invalido" });
     return;
   }
 
-  const { name, species, house, actor } = req.body;
+  const character = await Character.findById(id);
 
+  if (!character) {
+    return res.status(404).send({ message: "Personagem não encontrado!" });
+  }
+
+  const { name, species, house, actor } = req.body; 
+
+
+  if (!name || !species || !house || !actor) {
+    res
+      .status(400)
+      .send({
+        message: "Você não enviou todos os dados necessários para a atualização",
+      });
+    return;
+  }
   character.name = name;
   character.species = species;
   character.house = house;
-  character.actor = actor;
+  character.actor = actor 
+
+  await character.save() // He will wait
+
+res.send({message: `Personagem atualizado com sucesso! ${character}`})
 
   res.send(character);
 });
 
 //DELETE - DELETE
-app.delete("/character/:id", (req, res) => {
-  const id = +req.params.id;
-  const character = characters.find((c) => c.id === id);
-  if (!character) {
-    res.status(404).send({ message: "Personagem não existe!" });
+app.delete("/character/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res.status(400).send({ message: "Id invalido" });
     return;
   }
 
-  const indexCharacter = characters.indexOf(character);
-  delete characters[indexCharacter];
+  const character = await Character.findById(id)
+
+  await character.remove()
 
   res.send({ message: "Personagem apagado com sucesso!" });
 });
 
 app.listen(3000, () => {
   console.log("Servidor rodando em http://localhost:3000");
-
 });
