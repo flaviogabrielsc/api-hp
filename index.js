@@ -8,6 +8,7 @@ app.use(express.json());
 const port = process.env.PORT || 3000 
 
 app.use('/', controllers)
+app.use('/', database)
 
 
 app.listen(port, () => {
