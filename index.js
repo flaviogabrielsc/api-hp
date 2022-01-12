@@ -35,22 +35,27 @@ app.get("/characters", async (req, res) => {
   res.send(characters.filter(Boolean));
 });
 
-//getBYID
+//getBYiD
 app.get("/character/:id", async (req, res) => {
     const {id} = req.params;
 
     if(!mongoose.Types.ObjectId.isValid(id)){
       res.status(400).send({ message: 'Id invalido'});
+      return; 
+
     }
-
-    const character = await  Character.findById(id);
-
-    if(!character) {
-      return res.status(404).send({ message: 'Personagem não encontrado'});
+    
+      
+      const character = await  Character.findById(id);
+      
+      if(!character){
+        return res.status(404).send({message: 'Personagem não encontrado!'})
+      }
+      
       
       res.send(character);
     }
-  })
+  )
 //POST - CREATE
 app.post("/character", async (req, res) => {
   const {name, species, house, actor} = req.body;
